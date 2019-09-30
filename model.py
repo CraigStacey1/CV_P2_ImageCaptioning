@@ -50,10 +50,13 @@ class DecoderRNN(nn.Module):
         embeddings = inputs.clone()
         
         for i in range(max_len):
-            op, st = self.lstm(embeddings, states)
-            op = self.fc_out(op.squeeze(1))
-            ix = op.max(1)[1]
-            result.append(ix.item())
-            embeddings = self.embed(ix).unsqueeze(1)
+            op, states = self.lstm(embeddings, states)
+            #print(op)
+            op = torch.argmax(self.fc_out(op), dim=2)
+            #print(op)
+            result.append(op.item())
+            embeddings = self.embed(op)
+            
+        print(result)
         return result
         
